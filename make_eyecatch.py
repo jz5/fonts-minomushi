@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""書体ラボの記事「書き損じミノムシ」のアイキャッチ(1280×640)。字形をパスにした SVG を書き出す。"""
+"""書体ラボの記事「書き損じミノムシ」のアイキャッチ（1280×640）。字形をパスにした SVG を書き出す。"""
 import json, subprocess, sys, os
 from pathlib import Path
 from fontTools.ttLib import TTFont
@@ -10,7 +10,7 @@ from fontTools.pens.transformPen import TransformPen
 style = sys.argv[1] if len(sys.argv) > 1 else "Marker"
 TEXT = "書き存✕✕損✕○じミノムシ"
 W, H, BG, FG = 1280, 640, "#fffdf5", "#1a1a1a"
-WIDTH = 1060  # 文字列の幅(px)
+WIDTH = 1060  # 文字列の幅（px）
 path = Path(__file__).parent / "dist" / f"Minomushi{style}-Regular.ttf"
 out = subprocess.run(["hb-shape", "--output-format=json", str(path), TEXT], capture_output=True, text=True,
                      env={**os.environ, "LC_ALL": "en_US.UTF-8"}).stdout

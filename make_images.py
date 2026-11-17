@@ -4,7 +4,7 @@
   python3 make_images.py          全部
   python3 make_images.py social   名前を指定したものだけ
 
-字形をパスにした SVG を組み、macOS の sips で PNG にする。hb-shape(HarfBuzz)が要る。
+字形をパスにした SVG を組み、macOS の sips で PNG にする。hb-shape（HarfBuzz）が要る。
 先に build_font.py と build_solo.py でフォントを作っておくこと。
 """
 import json
@@ -24,7 +24,7 @@ OUT = ROOT / "images"
 BG, FG, SUB = "#fffdf5", "#1a1a1a", "#8a8478"
 X, O, DOT = "✕", "○", "●"
 
-FONTS = {  # 書体名: (ファイル, 日本語名)
+FONTS = {  # 書体名: （ファイル, 日本語名）
     "Gokuboso": ("dist/MinomushiGokuboso-Regular.ttf", "ミノムシ ごくぼそ"),
     "Marumoji": ("dist/MinomushiMarumoji-Regular.ttf", "ミノムシ まるもじ"),
     "Ballpen": ("dist/MinomushiBallpen-Regular.ttf", "ミノムシ ボールペン"),
@@ -37,7 +37,7 @@ _cache = {}
 
 
 def load(key):
-    """書体名(FONTS のキー、または Nomi-太さ)から、ファイルの場所と字形の集まりを返す。"""
+    """書体名（FONTS のキー、または Nomi-太さ）から、ファイルの場所と字形の集まりを返す。"""
     if key not in _cache:
         path = ROOT / (f"dist-solo/Minomushi{key}.ttf" if key.startswith("Nomi-") else FONTS[key][0])
         _cache[key] = (path, TTFont(path).getGlyphSet())
@@ -45,7 +45,7 @@ def load(key):
 
 
 def shape(key, text, vertical=False, features=None):
-    """hb-shape で組み、(字形名, x, y) の並びと送りの合計を返す。単位はフォントの単位。"""
+    """hb-shape で組み、（字形名, x, y） の並びと送りの合計を返す。単位はフォントの単位。"""
     path, _ = load(key)
     cmd = ["hb-shape", "--output-format=json"]
     if vertical:
@@ -68,7 +68,7 @@ class Canvas:
 
     def text(self, key, text, x, y, size, color=FG, vertical=False, features=None, split=False, align="left"):
         """(x, y) を始点に組む。横書きは y がベースライン、縦書きは x が行の中心で y が上端。
-        split は1字ずつ別に組む(合字にせず、打った記号のまま見せる)。送った長さ(px)を返す。"""
+        split は1字ずつ別に組む（合字にせず、打った記号のまま見せる）。送った長さ（px）を返す。"""
         k = size / 1000
         if split:
             placed, ax, ay = [], 0, 0
@@ -117,7 +117,7 @@ class Canvas:
 
 
 def social():
-    """GitHub のソーシャルプレビュー(1280×640)。"""
+    """GitHub のソーシャルプレビュー（1280×640）。"""
     c = Canvas(1280, 640)
     c.text("Marker", f"書き存{X}{X}損{X}{O}じミノムシ", 640, 330, 106, align="center")
     c.text("Marumoji", "打つだけで出せる、書き損じミノムシのフォント", 640, 475, 36, color=SUB, align="center")

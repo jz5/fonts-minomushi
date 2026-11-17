@@ -2,13 +2,13 @@
 """ベースのフォントと dist のフォントを照合し、元の内容が変わっていないことを確かめる。
 
   - 元からある全グリフの輪郭・字幅が一致する
-  - 元の文字コード割り当てがすべて残っている(追加だけ)
-  - 元の GSUB のルックアップと機能が残っている(追加だけ)
-  - 元の GPOS のルックアップと機能が残っている(追加だけ)
+  - 元の文字コード割り当てがすべて残っている（追加だけ）
+  - 元の GSUB のルックアップと機能が残っている（追加だけ）
+  - 元の GPOS のルックアップと機能が残っている（追加だけ）
   - 触っていないテーブルがバイト単位で一致する
 
-あわせて、追加した機能が実際に効くことを hb-shape で確かめる(元の内容が無事でも、
-機能テーブルが HarfBuzz の検査に落ちると合字もスタイルセットも全部効かなくなる)。
+あわせて、追加した機能が実際に効くことを hb-shape で確かめる（元の内容が無事でも、
+機能テーブルが HarfBuzz の検査に落ちると合字もスタイルセットも全部効かなくなる）。
 """
 import re
 import shutil
@@ -106,7 +106,7 @@ def check(file, family, **_):
 
 
 def apply_horizontal(font, glyphs, feature):
-    """字形の並びに、liga(と指定の ss)のルックアップだけを順に当てる。置き換えと合字のみ対応。"""
+    """字形の並びに、liga（と指定の ss）のルックアップだけを順に当てる。置き換えと合字のみ対応。"""
     gsub = font["GSUB"].table
     tags = {"liga", feature} - {""}
     indices = sorted({i for r in gsub.FeatureList.FeatureRecord if r.FeatureTag in tags for i in r.Feature.LookupListIndex})
@@ -152,7 +152,7 @@ def apply_horizontal(font, glyphs, feature):
 
 
 def shape(path, text, features="", direction=""):
-    """hb-shape の結果を [(字形名, 横のずれ, 縦のずれ, 字送り)] で返す。"""
+    """hb-shape の結果を [（字形名, 横のずれ, 縦のずれ, 字送り）] で返す。"""
     args = ["hb-shape", "--no-clusters", "-u", ",".join(f"{ord(c):X}" for c in text)]
     if features:
         args.append(f"--features={features}")
@@ -170,14 +170,14 @@ def check_behaviour(font, path):
     """追加した機能が実際に効くか。"""
     cmap, glyf = font.getBestCmap(), font["glyf"]
     g = lambda ch: cmap[ord(ch)]
-    # 小さい虫のあとの吹き出しは、下げた字形(.d300 など)に替わる。字の照合では区別しない
+    # 小さい虫のあとの吹き出しは、下げた字形（.d300 など）に替わる。字の照合では区別しない
     level = lambda name: re.sub(r"\.([du]|s)\d+$", "", name)
     names = lambda text, features="": [level(name) for name, *_ in shape(path, text, features)]
     problems = []
 
     def expect(label, got, want):
         if got != want:
-            problems.append(f"{label}: {got}(期待 {want})")
+            problems.append(f"{label}: {got}（期待 {want}）")
 
     expect("合字", names("て✕✕で✕○"), [g("て") + ".struck", g("で") + ".bubble"])
     expect("虫だけ", names("●✕✕"), ["mino.bug"])
@@ -198,12 +198,12 @@ def check_behaviour(font, path):
         problems.append(f"縦書きで、右吹き出しの前の虫が字送りゼロの写しに替わっていない: {vertical}")
     if not (".bubble.vert" in vertical[1] and ".bubble.vert" in vertical[3]):
         problems.append(f"縦書きで吹き出しが右用の字形に替わっていない: {vertical}")
-    # 小さい虫のあとの右吹き出しは、虫に合わせて寄る(位置合わせが縦書きでも効いているか)。
+    # 小さい虫のあとの右吹き出しは、虫に合わせて寄る（位置合わせが縦書きでも効いているか）。
     # 縦用の小書きの字は右上にあるので、下がらず横にだけ寄る書体もある
     plain, low = shape(path, "て✕✕あ✕○", "", "ttb")[1], shape(path, "っ✕✕あ✕○", "", "ttb")[1]
     if low[1:3] == plain[1:3] and low[0] == plain[0]:
         problems.append(f"縦書きで、小さい虫のあとの右吹き出しが寄っていない: {plain} / {low}")
-    # 位置合わせ(GPOS)が効かないアプリでも寄るよう、ずらした字形に替わっているか
+    # 位置合わせ（GPOS）が効かないアプリでも寄るよう、ずらした字形に替わっているか
     if not re.search(r"\.s\d+$", low[0]):
         problems.append(f"縦書きで、小さい虫のあとの右吹き出しが、ずらした字形に替わっていない: {low}")
     small = [name for name, *_ in shape(path, "っ✕✕", "", "ttb")]
@@ -219,7 +219,7 @@ def check_behaviour(font, path):
             for index in record.Feature.LookupListIndex:
                 for subtable in font["GSUB"].table.LookupList.Lookup[index].SubTable:
                     vert.update(getattr(getattr(subtable, "ExtSubTable", subtable), "mapping", {}))
-    # (✕ は Safari では縦用の字形に替わらない)
+    # （✕ は Safari では縦用の字形に替わらない）
     entry = vert.get(g("て"))
     if entry != g("て") + ".vert" or g("✕") in vert or None in font["GSUB"].table.LookupList.Lookup:
         problems.append(f"縦書きの入口の字形が想定と違う: {entry}, ✕ → {vert.get(g('✕'))}")
@@ -230,11 +230,11 @@ def check_behaviour(font, path):
         got = apply_horizontal(font, glyphs, feature)
         if len(got) != len(want) or not all(w in name for name, w in zip(got, want)):
             problems.append(f"Safari の順序での縦書きの{label}: {got}")
-    # 小さい虫のあとの吹き出しは、位置合わせ(GPOS)を切っても下がっているか(Illustrator の横書き用)
+    # 小さい虫のあとの吹き出しは、位置合わせ（GPOS）を切っても下がっているか（Illustrator の横書き用）
     after_small = shape(path, "っ✕✕あ✕○", "-dist,-kern")[1][0]
     if not re.search(r"\.d\d+$", after_small):
         problems.append(f"小さい虫のあとの吹き出しが、下げた字形に替わっていない: {after_small}")
-    # 漢字(漢字のある書体だけ)。虫と吹き出しは部品を参照する字形で、ss02 は虫と吹き出しの2字形に分かれる
+    # 漢字（漢字のある書体だけ）。虫と吹き出しは部品を参照する字形で、ss02 は虫と吹き出しの2字形に分かれる
     if ord("漢") in cmap:
         k, n = g("漢"), g("猫")
         expect("漢字の合字", names("漢✕✕猫✕○"), [k + ".struck", n + ".bubble"])
@@ -242,7 +242,7 @@ def check_behaviour(font, path):
         expect("縦書きの漢字", [name for name, *_ in shape(path, "漢✕✕猫✕○っ✕✕猫✕○", "", "ttb")],
                [k + ".struck.pre", n + ".bubble.vert", g("っ") + ".vert.struck.pre" if g("っ") + ".vert.struck" in glyf.glyphs else g("っ") + ".struck.vert.pre", n + ".bubble.vert"])
         expect("縦書きの漢字の ss02", [name for name, *_ in shape(path, "漢", "ss02", "ttb")], [k + ".struck.pre", k + ".bubble.vert"])
-        # Safari は漢字を縦用の字形に替えない。同じ行のかな(縦用の字形)から縦書きが伝わって、
+        # Safari は漢字を縦用の字形に替えない。同じ行のかな（縦用の字形）から縦書きが伝わって、
         # 漢字の吹き出しが縦書き用になるか。かなが前にある場合と後ろにある場合
         for label, glyphs in (("前", [entry, k, g("✕"), g("✕"), n, g("✕"), g("○")]), ("後ろ", [k, g("✕"), g("✕"), n, g("✕"), g("○"), k, entry])):
             got = apply_horizontal(font, glyphs, "")
@@ -250,12 +250,12 @@ def check_behaviour(font, path):
                 problems.append(f"Safari の縦書きで、かなが{label}にあるときの漢字: {got}")
         if any(".vert" in x for x in apply_horizontal(font, [k, g("✕"), g("✕"), n, g("✕"), g("○")], "")):
             problems.append("横書きの漢字が縦書き用の字形になっている")
-        # 右から左へたどる規則(ルックアップの種類 8)が1つでもあると、Illustrator は合字をすべて無効にする
+        # 右から左へたどる規則（ルックアップの種類 8）が1つでもあると、Illustrator は合字をすべて無効にする
         if any(getattr(t, "ExtSubTable", t).LookupType == 8 for lookup in font["GSUB"].table.LookupList.Lookup for t in lookup.SubTable):
-            problems.append("Illustrator が読めない種類の規則(逆順の文脈置換)が入っている")
+            problems.append("Illustrator が読めない種類の規則（逆順の文脈置換）が入っている")
         if not glyf[k + ".struck"].isComposite() or not glyf[k + ".mino"].isComposite() or not glyf[n + ".bubble"].isComposite():
             problems.append("漢字の字形が部品の参照になっていない")
-    # 幅ゼロの吹き出しが、直前の虫の中央に来ているか(吹き出しは左右に 80 ほど揺らしてある)。
+    # 幅ゼロの吹き出しが、直前の虫の中央に来ているか（吹き出しは左右に 80 ほど揺らしてある）。
     # 句読点やかっこの虫は字に寄せてあるので、字送りの中央ではなく虫を重ねた字形の中央と比べる
     for ch in "あいしくっゃのーai1。「":
         (struck, _, _, advance), (bubble, dx, _, _) = shape(path, ch + "✕✕" + "あ✕○")
@@ -268,6 +268,6 @@ def check_behaviour(font, path):
 
 if __name__ == "__main__":
     if not shutil.which("hb-shape"):
-        sys.exit("hb-shape が見つからない(HarfBuzz のコマンドラインツールが必要)")
+        sys.exit("hb-shape が見つからない（HarfBuzz のコマンドラインツールが必要）")
     results = [check(**base) for base in BASES]
     sys.exit(0 if all(results) else 1)

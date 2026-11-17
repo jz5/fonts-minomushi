@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
-"""書き損じミノムシ フォント(試作)。
+"""書き損じミノムシ フォント（試作）。
 
-ベースの手書き風フォント(いずれも SIL OFL 1.1)の字形と機能をすべて残したまま、
+ベースの手書き風フォント（いずれも SIL OFL 1.1）の字形と機能をすべて残したまま、
 書き損じミノムシの字形を追加する。
 
-合字(文字を打つだけで出る。発動には必ず ✕ U+2715 が入る)
-  字✕✕  → その字の上に虫(一筆のぐしゃぐしゃ + 目玉)を重ねる
-  字✕○  → 直前の文字の上に、その字の吹き出しを重ねる(幅ゼロ)
-  ●✕✕  → 虫だけ(下の字なし)
+合字（文字を打つだけで出る。発動には必ず ✕ U+2715 が入る）
+  字✕✕  → その字の上に虫（一筆のぐしゃぐしゃ + 目玉）を重ねる
+  字✕○  → 直前の文字の上に、その字の吹き出しを重ねる（幅ゼロ）
+  ●✕✕  → 虫だけ（下の字なし）
   例: あ✕✕い✕○ … 「あ」を虫で消して、上に「い」の吹き出し
 
-スタイルセット(テキストは元の文字のまま。読み上げ・コピーに記号が混ざらない)
+スタイルセット（テキストは元の文字のまま。読み上げ・コピーに記号が混ざらない）
   ss01 → 字に虫を重ねる
   ss02 → 虫 + その字の吹き出し
-  ss03 → 吹き出しのみ(幅ゼロ)
+  ss03 → 吹き出しのみ（幅ゼロ）
 
-替え字形(かなと「虫だけ」は形を3種類持つ)
-  虫が続けて出ると、直前の虫と違う形に順に切り替わる(同じ字を並べても同じ形が続かない)。
-  幅ゼロの吹き出し(字✕○、ss03)も、虫とは別に同じ仕組みで切り替わる。
+替え字形（かなと「虫だけ」は形を3種類持つ）
+  虫が続けて出ると、直前の虫と違う形に順に切り替わる（同じ字を並べても同じ形が続かない）。
+  幅ゼロの吹き出し（字✕○、ss03）も、虫とは別に同じ仕組みで切り替わる。
   間に挟まる文字が GAP 字を超えるか、かなと漢字の境目をまたぐと、最初の形に戻る。
 
 大きさの決め方
-  虫の上下   … 書体ごとに、かな(小書きを除く)の高さから決める。小書きの字はその字の高さまで。
+  虫の上下   … 書体ごとに、かな（小書きを除く）の高さから決める。小書きの字はその字の高さまで。
   虫の幅     … 虫にした字の字送り × BUG_FILL。字送り 1000 で元の大きさ。
   虫の字送り … 字幅固定の書体は元のまま。字幅が不揃いな書体は CELL_GROW 倍に広げ、MIN_CELL を下限にする。
-  吹き出し   … 書体ごとに同じ大きさ。幅の広いかなの字送りに収まるよう縮める(字送り 1000 で元の大きさ)。
+  吹き出し   … 書体ごとに同じ大きさ。幅の広いかなの字送りに収まるよう縮める（字送り 1000 で元の大きさ）。
   ss02 の字送り … 字幅が不揃いな書体では、吹き出しの幅近くまで広げる。
   幅ゼロの吹き出しの位置 … 標準の字送りの字の上に描き、GPOS の dist で直前の字の中央・高さへずらす。
 
@@ -32,18 +32,18 @@
 記号を後置にするのは、記号が直前の文字と同じスクリプトのランに入るため。
 前置だと「かな✕漢字」でランが分かれて合字にならない。
 
-縦書き(かな・英数字・記号・「字」)
+縦書き（かな・英数字・記号・「字」）
   虫は横書きと同じ字形を使い、縦の字送りを長くして目が前の字に重ならないようにする。
-  吹き出しは虫の右に出す字形を別に持つ。吹き出しは直前の虫と同じ始点から描き、虫のほうを字送りゼロの写し(.pre)に
-  替える(Illustrator は字送りの始点より上にはみ出す字形を切り落とすので、虫のあとから上へ戻して描く作りは不可)。
-  縦書きの入口でかなを同じ形の写し(.vert)に替え、写しから縦書き用の字形を直接出す。
+  吹き出しは虫の右に出す字形を別に持つ。吹き出しは直前の虫と同じ始点から描き、虫のほうを字送りゼロの写し（.pre）に
+  替える（Illustrator は字送りの始点より上にはみ出す字形を切り落とすので、虫のあとから上へ戻して描く作りは不可）。
+  縦書きの入口でかなを同じ形の写し（.vert）に替え、写しから縦書き用の字形を直接出す。
   Safari は縦書きで「1文字ずつ vert → 横書き用の liga・ss」の順にしか当てないため、
   合字のあとで縦用に替える作りでは効かない。HarfBuzz は逆に縦書きで liga を使わないので、
   合字と順送りは liga と vert の両方に登録してある。
-  元のフォントが縦用の字形を持つ字(小書きの字、長音など)は、縦用の字形に重ねた虫も作る。
-  縦の字送りの表(vmtx)が無い書体(Darumadrop One)には、全角の標準の値で表を足す。
+  元のフォントが縦用の字形を持つ字（小書きの字、長音など）は、縦用の字形に重ねた虫も作る。
+  縦の字送りの表（vmtx）が無い書体（Darumadrop One）には、全角の標準の値で表を足す。
 
-注意: 吹き出しは行の高さ(ascent 1160)を大きく超えて、上端が 2000 前後まで出る。行間を広げて使う。
+注意: 吹き出しは行の高さ（ascent 1160）を大きく超えて、上端が 2000 前後まで出る。行間を広げて使う。
 """
 import collections
 import copy
@@ -71,14 +71,14 @@ def nib_round(d, n=10):
 
 
 def nib_rect(w, h, c):
-    """角を落とした四角いペン先(マーカー・クレヨン)。横に動くと細く、縦に動くと太い。"""
+    """角を落とした四角いペン先（マーカー・クレヨン）。横に動くと細く、縦に動くと太い。"""
     x, y = w / 2, h / 2
     return [(x - c, y), (x, y - c), (x, -y + c), (x - c, -y), (-x + c, -y), (-x, -y + c), (-x, y - c), (-x + c, y)]
 
 
 # ベースごとのペン先。太さは「ー」「い」などの実測に合わせた。
 #   nib: ペン先の輪郭 / rough: 輪郭のがたつき
-#   family・ja: 新しい名前。元の書体名は含めない(作者の README が派生名への使用を禁じている書体がある)
+#   family・ja: 新しい名前。元の書体名は含めない（作者の README が派生名への使用を禁じている書体がある）
 #   seed: 字形の乱数の種。名前を変えても形が変わらないよう固定する
 BASES = [
     dict(file="Yomogi-Regular", family="Minomushi Gokuboso", ja="ミノムシ ごくぼそ", based_on="Yomogi", seed="Minomushi Yomogi", nib=nib_round(40), rough=0),
@@ -89,7 +89,7 @@ BASES = [
     dict(file="SlacksideOne-Regular", family="Minomushi Yurugaki", ja="ミノムシ ゆるがき", based_on="Slackside One", seed="Minomushi Slackside", nib=nib_round(66), rough=4),
 ]
 
-# 対応文字: ひらがな・カタカナ全部と長音、英数字(半角・全角)、よく使う記号、試作から使っている漢字1字。
+# 対応文字: ひらがな・カタカナ全部と長音、英数字（半角・全角）、よく使う記号、試作から使っている漢字1字。
 # フォントに無い字は飛ばす
 KANA = "".join(chr(c) for c in [*range(0x3041, 0x3097), *range(0x30A1, 0x30FB), 0x30FC])
 ALNUM = "".join(chr(base + c) for base in (0, 0xFEE0) for c in [*range(0x30, 0x3A), *range(0x41, 0x5B), *range(0x61, 0x7B)])
@@ -106,7 +106,7 @@ MANUFACTURER = "Pronama LLC"              # name テーブルの製造元
 VARIANTS = 3                              # かなと「虫だけ」に用意する形の数
 GAP = 20                                  # 直前の虫・吹き出しを探しにいく字数の上限
 
-# ---- 虫(1000 UPM。字送り 1000 のときの大きさが基準) ----
+# ---- 虫（1000 UPM。字送り 1000 のときの大きさが基準） ----
 SCRIBBLE_TOP, SCRIBBLE_BOTTOM = 730, -90   # 虫の上下の目安。実際は書体ごとに、かなの高さから決める
 BUG_FILL = 0.84                           # 字送りに対する虫の幅。残りが隣の虫とのすき間になる
 CELL_GROW = 1.1                           # 字幅が不揃いな書体で、虫にした字の字送りを広げる倍率
@@ -117,18 +117,18 @@ EYE_PEN_MAX, BUBBLE_PEN_MAX = 62, 90      # 極太ペンでも目と吹き出し
 
 # ---- 吹き出し ----
 BUBBLE_FILL = 0.97                        # 字送りに対する吹き出しの幅の上限
-CHAR_SCALE = 0.62                         # 吹き出しの中の字の縮小率(字送り 1000 のとき)
+CHAR_SCALE = 0.62                         # 吹き出しの中の字の縮小率（字送り 1000 のとき）
 CHAR_FILL = 0.7                           # 吹き出しの内側に対する、中の字の大きさの下限
 CHAR_CLEARANCE = 18  # 吹き出しの中の字と枠の線のあいだに空けるすき間
 CHAR_STROKE_MAX = 75  # 吹き出しの中の字を太らせる上限
 LOW_STEP = 100  # 横書きで、小さい虫に合わせて吹き出しを下げる刻み
-SIDE_STEP = 50  # 縦書きで、虫の目の位置に合わせて右吹き出しをずらす刻み(横)
+SIDE_STEP = 50  # 縦書きで、虫の目の位置に合わせて右吹き出しをずらす刻み（横）
 SIDE_KEEP = 8  # 漢字のある書体で残す、縦のずらしの組の数。字形数の上限に収めるため、使う虫の少ない組は近い組に寄せる
 SIDE_STEP_Y = 100  # 同、縦の刻み。字形数を抑えるため横より粗くする
 KANJI_BUGS, KANJI_FRAMES = 12, 8  # 漢字で使い回す、虫と吹き出しの枠の種類
 KANJI_BUG_CELL = 1090
-SPREAD_REACH = 24  # Safari の縦書きで、後ろのかなから漢字へ縦書きを伝える範囲(字形数。✕ や ○ も数える)  # 漢字の虫の幅を決める字送り(かなは 1000。虫の幅はこの 0.84 倍)
-VERTICAL_OVERHANG = 0  # 縦書きで、字送りの始点より上にはみ出してよい量(Illustrator は 30 でも上端がわずかに切れた)
+SPREAD_REACH = 24  # Safari の縦書きで、後ろのかなから漢字へ縦書きを伝える範囲（字形数。✕ や ○ も数える）  # 漢字の虫の幅を決める字送り（かなは 1000。虫の幅はこの 0.84 倍）
+VERTICAL_OVERHANG = 0  # 縦書きで、字送りの始点より上にはみ出してよい量（Illustrator は 30 でも上端がわずかに切れた）
 
 
 def signed_area(pts):
@@ -136,7 +136,7 @@ def signed_area(pts):
 
 
 def draw_poly(pen, pts):
-    """塗りの向き(時計回り)に揃えて描く。"""
+    """塗りの向き（時計回り）に揃えて描く。"""
     pts = [(round(x), round(y)) for x, y in pts]
     area = signed_area(pts)
     if abs(area) < 1:
@@ -162,7 +162,7 @@ def convex_hull(pts):
 
 
 def round_corners(pts):
-    """折れ線の角を丸める(両端は保つ)。1回目は浅く切って振れ幅を残す。"""
+    """折れ線の角を丸める（両端は保つ）。1回目は浅く切って振れ幅を残す。"""
     for q in (0.1, 0.25):
         out = [pts[0]]
         for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
@@ -223,7 +223,7 @@ def nib_size(nib):
 
 def bug_squeeze(cell, nib, glyph_width=None):
     """字送り cell に虫が収まるよう、横の振れ幅に掛ける倍率。字送り 1000 で 1。
-    glyph_width を渡すと、その幅の字を消せる大きさまでさらに縮める(小書きの字・英数字・記号用)。"""
+    glyph_width を渡すと、その幅の字を消せる大きさまでさらに縮める（小書きの字・英数字・記号用）。"""
     nib_w = nib_size(nib)[0]
     width = cell * BUG_FILL
     if glyph_width is not None:
@@ -234,7 +234,7 @@ def bug_squeeze(cell, nib, glyph_width=None):
 def scribble_path(rng, nib_h, squeeze=1.0, top=SCRIBBLE_TOP, bottom=SCRIBBLE_BOTTOM):
     """一筆でぐしゃぐしゃと消した線。上が太く下へ細るミノ形が多め。squeeze で横幅を縮める。"""
     height = top - bottom
-    # 一往復で下がる量はペンの太さ以下に抑える(線どうしが重なって密になる)。太いペンでも9回は振る
+    # 一往復で下がる量はペンの太さ以下に抑える（線どうしが重なって密になる）。太いペンでも9回は振る
     turns = max(9, min(26, round(height / (nib_h * rng.uniform(0.72, 0.98)))))
     full = rng.uniform(430, 490) * squeeze
     kind = rng.choices(("taper", "shoulder", "even"), weights=(65, 22, 13))[0]
@@ -275,7 +275,7 @@ def scribble_path(rng, nib_h, squeeze=1.0, top=SCRIBBLE_TOP, bottom=SCRIBBLE_BOT
 
 
 def loop_path(rng, cx, cy, rx, ry, n, wobble, tilt=0.0, pull=None):
-    """手で描いた輪。閉じ際が少しずれて重なる。pull=(角度, 先端, 半角) でしっぽを付ける。"""
+    """手で描いた輪。閉じ際が少しずれて重なる。pull=（角度, 先端, 半角） でしっぽを付ける。"""
     p1, p2 = rng.uniform(0, 6.28), rng.uniform(0, 6.28)
     start = rng.uniform(0, 2 * math.pi)
     drift = rng.uniform(-0.05, 0.05)       # 一周するうちに半径がずれる
@@ -314,7 +314,7 @@ def nominal_eye_top(nib, top=SCRIBBLE_TOP):
 
 
 def draw_bug(pen, rng, nib, rough, squeeze=1.0, top=SCRIBBLE_TOP, bottom=SCRIBBLE_BOTTOM):
-    """虫: 一筆のぐしゃぐしゃと、その上に乗る目玉。(目の中心x, 目の上端y) を返す。"""
+    """虫: 一筆のぐしゃぐしゃと、その上に乗る目玉。（目の中心x, 目の上端y） を返す。"""
     nib_h = nib_size(nib)[1]
     draw_stroke(pen, rng, scribble_path(rng, nib_h, squeeze, top, bottom), nib, rough)
 
@@ -342,16 +342,16 @@ def draw_bug(pen, rng, nib, rough, squeeze=1.0, top=SCRIBBLE_TOP, bottom=SCRIBBL
 
 
 def bubble_fit(cell, line):
-    """字送り cell に合わせて吹き出しを縮める倍率(字送り 1000 では 1)。"""
+    """字送り cell に合わせて吹き出しを縮める倍率（字送り 1000 では 1）。"""
     return min(1, (cell * BUBBLE_FILL - line) / 2 / ((370 + line * 0.5) * 1.07))
 
 
 def draw_bubble(pen, rng, glyph_set, base_name, nib, rough, eye_cx, eye_top, dx=0, cell=1000, mid=340, boost=1.0, typical_size=None, clear=None):
     """吹き出し: 同じペンで一周描く。位置・大きさ・傾き・しっぽを毎回ばらつかせる。
-    clear を渡すと縦書き用。虫の右(x が clear より右)に置き、しっぽを目のほうへ向ける。"""
+    clear を渡すと縦書き用。虫の右（x が clear より右）に置き、しっぽを目のほうへ向ける。"""
     bubble_nib = scale_nib(nib, BUBBLE_PEN_MAX)
     line = max(nib_size(bubble_nib))
-    # 字送りが狭い書体では、隣の吹き出しと重ならないよう小さくする(字送り 1000 では元の大きさ)
+    # 字送りが狭い書体では、隣の吹き出しと重ならないよう小さくする（字送り 1000 では元の大きさ）
     fit = bubble_fit(cell, line)
     rx = (370 + line * 0.5) * rng.uniform(0.95, 1.07) * fit
     ry = (335 + line * 0.5) * rng.uniform(0.95, 1.07) * fit
@@ -366,13 +366,13 @@ def draw_bubble(pen, rng, glyph_set, base_name, nib, rough, eye_cx, eye_top, dx=
         tip = (dx + eye_cx + 2 * r + eye_line + line / 2 + rng.uniform(40, 60), eye_mid + rng.uniform(-40, -20))
         cx = max(tip[0] + rng.uniform(95, 150), dx + clear + line / 2 + 20) + rx
         # 吹き出しは目とほぼ同じ高さに置く。目より低いと、しっぽが上を向いて不自然になる。
-        # 高くしすぎると、Illustrator で上端が切れる(build の VERTICAL_OVERHANG を参照)
+        # 高くしすぎると、Illustrator で上端が切れる（build の VERTICAL_OVERHANG を参照）
         cy = eye_mid + rng.uniform(-60, -30)
     t0 = math.atan2((tip[1] - cy) / ry, (tip[0] - cx) / rx) + rng.uniform(-0.2, 0.2)
     path = loop_path(rng, cx, cy, rx, ry, 44, rng.uniform(0.018, 0.04), rng.uniform(-0.12, 0.12),
                      pull=(t0, tip, rng.uniform(0.13, 0.2)))
     draw_stroke(pen, rng, path, bubble_nib, rough * 0.6)
-    if base_name is None:  # 枠だけ(漢字用の部品)。中の字を置くための中心・大きさを返す
+    if base_name is None:  # 枠だけ（漢字用の部品）。中の字を置くための中心・大きさを返す
         return cx, cy, rx, ry, line, fit
 
     # 正しい字。縮小で細くなるぶん、輪郭を丸ペンでなぞって太らせる
@@ -382,12 +382,12 @@ def draw_bubble(pen, rng, glyph_set, base_name, nib, rough, eye_cx, eye_top, dx=
     if typical_size:  # 字の小さい書体では余白が空きすぎるので、吹き出しの内側に対する割合で下限を設ける
         s = max(s, CHAR_FILL * (2 * (370 + line * 0.5) * fit - line) / typical_size)
     s *= boost  # boost は小書きの字用
-    # 字の見た目の中心を吹き出しの中心に合わせる(字幅が一定でない書体でもずれない)。
+    # 字の見た目の中心を吹き出しの中心に合わせる（字幅が一定でない書体でもずれない）。
     # 縦は小書きの字などが浮きすぎないよう、その書体の字の中心 mid と半々にする
     bounds = BoundsPen(glyph_set)
     rec.replay(bounds)
     x0, y0, x1, y1 = bounds.bounds or (0, 0, 1000, 680)
-    # 濁点・半濁点の付く字などは標準の字より大きい。字の四隅(濁点のある右上など)が枠の内側に収まる大きさを上限にする
+    # 濁点・半濁点の付く字などは標準の字より大きい。字の四隅（濁点のある右上など）が枠の内側に収まる大きさを上限にする
     inner_x, inner_y = rx - line / 2 - CHAR_CLEARANCE, ry - line / 2 - CHAR_CLEARANCE
     # 縦書き用の吹き出しでは、字を枠の真ん中に置く。縦用の小書きの字は字面の右上に寄っているので、
     # 書体の字の中心と半々にすると枠の上に寄りすぎる
@@ -415,7 +415,7 @@ def finish(pen):
 
 
 def glyph_combined(glyph_set, base_name, seed, nib, rough, cell, squeeze, top, bottom, mid, bubble_cell, boost, typical_size, bug_dx=0):
-    """虫 + その字の吹き出し(ss02)。字送り cell の中央に置く。"""
+    """虫 + その字の吹き出し（ss02）。字送り cell の中央に置く。"""
     rng, pen = random.Random(seed), TTGlyphPen(None)
     shift = (cell - 1000) / 2
     eye_cx, eye_top = draw_bug(TransformPen(pen, (1, 0, 0, 1, shift + bug_dx, 0)), rng, nib, rough, squeeze, top, bottom)
@@ -424,8 +424,8 @@ def glyph_combined(glyph_set, base_name, seed, nib, rough, cell, squeeze, top, b
 
 
 def glyph_struck(glyph_set, base_name, seed, nib, rough, cell, advance, squeeze, top, bottom, bug_dx=0):
-    """元の字の上に虫を重ねる(あ×)。base_name が None なら虫だけ(●×)。
-    字送り cell の中央に、元の字(字幅 advance)と虫を置く。"""
+    """元の字の上に虫を重ねる（あ×）。base_name が None なら虫だけ（●×）。
+    字送り cell の中央に、元の字（字幅 advance）と虫を置く。"""
     rng, pen = random.Random(seed), TTGlyphPen(None)
     if base_name:
         rec = DecomposingRecordingPen(glyph_set)
@@ -446,8 +446,8 @@ def glyph_combined_vertical(glyph_set, char_name, seed, nib, rough, cell, squeez
 
 
 def glyph_bubble_vertical(glyph_set, char_name, seed, nib, rough, prev_cell, top, mid, boost, bubble_cell, typical_size):
-    """縦書き用の幅ゼロの吹き出し(い○)。直前(上)の虫の右に出す。
-    縦書きでは字形の x=0 が行の中央に来るので、虫の中央(500)を 0 に合わせて描く。"""
+    """縦書き用の幅ゼロの吹き出し（い○）。直前（上）の虫の右に出す。
+    縦書きでは字形の x=0 が行の中央に来るので、虫の中央（500）を 0 に合わせて描く。"""
     rng, pen = random.Random(seed), TTGlyphPen(None)
     draw_bubble(pen, rng, glyph_set, char_name, nib, rough, 500, nominal_eye_top(nib, top), dx=-500, cell=bubble_cell, mid=mid,
                 boost=boost, typical_size=typical_size, clear=500 + prev_cell * BUG_FILL / 2)
@@ -455,7 +455,7 @@ def glyph_bubble_vertical(glyph_set, char_name, seed, nib, rough, prev_cell, top
 
 
 def glyph_frame(glyph_set, seed, nib, rough, prev_cell, top, mid, bubble_cell, vertical):
-    """吹き出しの枠だけの字形(漢字用の部品)と、中に字を置くための (中心x, 中心y, 横半径, 縦半径, 線の太さ, 縮小率)。
+    """吹き出しの枠だけの字形（漢字用の部品）と、中に字を置くための （中心x, 中心y, 横半径, 縦半径, 線の太さ, 縮小率）。
     横書き用は幅ゼロで左隣の字の上、縦書き用は虫の右。位置の決め方はかなの吹き出しと同じ。"""
     rng, pen = random.Random(seed), TTGlyphPen(None)
     if vertical:
@@ -472,7 +472,7 @@ def is_kanji(code):
 
 
 def glyph_bubble(glyph_set, base_name, seed, nib, rough, prev_advance, top, mid, boost, bubble_cell, typical_size):
-    """直前の文字の上に出す吹き出し(い○)。幅ゼロで、左隣の字の中央に合わせて描く。"""
+    """直前の文字の上に出す吹き出し（い○）。幅ゼロで、左隣の字の中央に合わせて描く。"""
     rng, pen = random.Random(seed), TTGlyphPen(None)
     draw_bubble(pen, rng, glyph_set, base_name, nib, rough, 500, nominal_eye_top(nib, top), dx=-prev_advance / 2 - 500, cell=bubble_cell, mid=mid, boost=boost, typical_size=typical_size)
     return finish(pen)
@@ -480,7 +480,7 @@ def glyph_bubble(glyph_set, base_name, seed, nib, rough, prev_advance, top, mid,
 
 def add_feature(gsub, tag, lookup_index):
     records = gsub.FeatureList.FeatureRecord
-    # 同じタグの feature が既にあるならそこへ足す(同タグを2つ並べても片方しか使われない)
+    # 同じタグの feature が既にあるならそこへ足す（同タグを2つ並べても片方しか使われない）
     existing = [r for r in records if r.FeatureTag == tag]
     if existing:
         for r in existing:
@@ -519,7 +519,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
     circle, blot = cmap[CIRCLE], cmap[BLOT]
     added = []
 
-    # 縦の字送りの表が無い書体(Darumadrop One)には足す。無いままだと縦書きの字送りがアプリ任せになり、
+    # 縦の字送りの表が無い書体（Darumadrop One）には足す。無いままだと縦書きの字送りがアプリ任せになり、
     # 虫の字送りも右吹き出しの位置も決められない。全角の標準どおり、字送り 1000・仮想ボディの上端を原点にする
     if "vmtx" not in font:
         top_edge = font["OS/2"].sTypoAscender
@@ -566,35 +566,35 @@ def build(file, family, ja, based_on, seed, nib, rough):
     # 「字と同じ幅の虫」と「隣の虫とのすき間」を両立させる
     grow = CELL_GROW if advances[0] != advances[-1] else 1
     bug_cell = max(round(typical * grow), MIN_CELL) if grow > 1 else 1000  # 虫だけの字形の字送り
-    # 虫の上下は、その書体のかな(小書きを除く)の高さに合わせる
+    # 虫の上下は、その書体のかな（小書きを除く）の高さに合わせる
     full_size = [glyf[cmap[ord(ch)]] for ch in KANA if ord(ch) in cmap and ch not in SMALL_KANA and ch != "ー"]
     tops, bottoms = sorted(g.yMax for g in full_size), sorted(g.yMin for g in full_size)
     box_top, box_bottom = tops[len(tops) // 2] - 30, bottoms[len(bottoms) // 10] - 10
     mid = (box_top + box_bottom) / 2 + 20
-    # 吹き出しは書体の標準の字送りに合わせた大きさに揃える(狭い字でも小さくしない。隣と重なるのは許す)
+    # 吹き出しは書体の標準の字送りに合わせた大きさに揃える（狭い字でも小さくしない。隣と重なるのは許す）
     wide = sorted(hmtx[cmap[ord(ch)]][0] for ch in KANA if ord(ch) in cmap and ch not in SMALL_KANA)
-    bubble_floor = max(bug_cell, round(wide[len(wide) * 4 // 5] * grow))  # 幅の広い字(上位2割)の字送りが基準
-    # 吹き出し付き(ss02)の字送りは、吹き出しの幅近くまで広げる(隣とは軽く触れる程度)。
+    bubble_floor = max(bug_cell, round(wide[len(wide) * 4 // 5] * grow))  # 幅の広い字（上位2割）の字送りが基準
+    # 吹き出し付き（ss02）の字送りは、吹き出しの幅近くまで広げる（隣とは軽く触れる程度）。
     # 字幅固定の書体のかなは元から足りているので変わらず、半角の英数字などに効く
     line = max(nib_size(scale_nib(nib, BUBBLE_PEN_MAX)))
     bubble_width = 2 * (370 + line * 0.5) * bubble_fit(bubble_floor, line) + line
     mino_floor = round(bubble_width * 0.95)
-    # 小書きの字は吹き出しの中で潰れやすいので、普通の字の8割の大きさになるまで拡大する(最大1.5倍)
+    # 小書きの字は吹き出しの中で潰れやすいので、普通の字の8割の大きさになるまで拡大する（最大1.5倍）
     sizes = sorted(max(g.xMax - g.xMin, g.yMax - g.yMin) for g in full_size)
     typical_size = sizes[len(sizes) // 2]
 
     struck, combined, bubble, liga = {}, {}, {}, {}
-    # 元のフォントが縦書きで置き換える字形(小書きの字、長音など)
+    # 元のフォントが縦書きで置き換える字形（小書きの字、長音など）
     vert_map = {}
     for record in font["GSUB"].table.FeatureList.FeatureRecord:
         if record.FeatureTag == "vert":
             for index in record.Feature.LookupListIndex:
                 for subtable in font["GSUB"].table.LookupList.Lookup[index].SubTable:
                     vert_map.update(getattr(subtable, "mapping", {}))
-    # 縦書きの入口。Safari は縦書きで、まず1文字ずつ vert の字形に替え、そのあと横書き用の機能(liga・ss)
+    # 縦書きの入口。Safari は縦書きで、まず1文字ずつ vert の字形に替え、そのあと横書き用の機能（liga・ss）
     # だけを当てる。合字やスタイルセットのあとで縦用の字形に替える作りは Safari では効かないので、
     # 縦用の字形を持たないかなに同じ形の写しを作って vert で替え、写しからは縦書き用の字形が直接出るようにする。
-    # (✕ にも写しを作る案は不可。Safari は ✕ を縦用の字形に替えないので、合字が成り立たなくなる)
+    # （✕ にも写しを作る案は不可。Safari は ✕ を縦用の字形に替えないので、合字が成り立たなくなる）
     def twin(name):
         glyf[name + ".vert"] = copy.deepcopy(glyf[name])
         hmtx[name + ".vert"] = hmtx[name]
@@ -606,7 +606,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
         if name and name not in vert_map:
             assert name + ".vert" not in glyf.glyphs
             entry[name] = twin(name)
-    # Safari は、漢字だけのページ(文字コード 256 個の区切り)の字を縦用の字形に替えない。漢字は vert が
+    # Safari は、漢字だけのページ（文字コード 256 個の区切り）の字を縦用の字形に替えない。漢字は vert が
     # 効かないまま横書き用の合字に進み、吹き出しが横書きの形で出てしまう。そこで「縦用の字形の隣にある
     # 漢字は縦用の写しに替える」規則を合字の前に置き、同じ行のかな・句読点から縦書きであることを伝える。
     # ✕ ○ ● と空白は、伝えるあいだだけ目印の写しに替え、合字の前に元へ戻す。横書きには縦用の字形が
@@ -625,7 +625,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
         return [set() for _ in range(VARIANTS)], [{} for _ in range(VARIANTS - 1)]
     bug_cycle, bubble_cycle = new_cycle(), new_cycle()
 
-    eye_info = {}  # 虫の字形 → 描いたときの目の右端 x と目の高さ y(字送り 1000 の中央に描いた座標)
+    eye_info = {}  # 虫の字形 → 描いたときの目の右端 x と目の高さ y（字送り 1000 の中央に描いた座標）
 
     def add_variants(name, make, advance, count, cycle=bug_cycle):
         """name を最初の形として count 種類の字形を作り、切り替え表に登録する。"""
@@ -639,10 +639,10 @@ def build(file, family, ja, based_on, seed, nib, rough):
             step[n][names[0]] = names[n + 1]
 
     pending_bubbles = []
-    nudge = {}  # 字形名 → 直後の幅ゼロの吹き出しをずらす量 (横, 縦)
+    nudge = {}  # 字形名 → 直後の幅ゼロの吹き出しをずらす量 （横, 縦）
     add_variants("mino.bug", lambda v: glyph_struck(glyph_set, None, f"{seed}-bug{v}", nib, rough, bug_cell, bug_cell, bug_squeeze(bug_cell, nib), box_top, box_bottom), bug_cell, VARIANTS)
     def fit(ch, name, vertical=False):
-        """字 ch(字形 name)に重ねる虫の大きさと位置。"""
+        """字 ch（字形 name）に重ねる虫の大きさと位置。"""
         advance, glyph = hmtx[name][0], glyf[name]
         cell = max(round(advance * grow), MIN_CELL)  # 狭い字は虫にしたときだけ字送りを下限まで広げる
         squeeze, top, bottom, boost, bug_dx = bug_squeeze(cell, nib), box_top, box_bottom, 1.0, 0
@@ -652,13 +652,13 @@ def build(file, family, ja, based_on, seed, nib, rough):
             top = min(box_top, glyph.yMax - 40)
             boost = max(1.0, min(1.5, 0.8 * typical_size / size))
         elif ch in ALNUM + PUNCT or ch in SMALL_KANA:
-            # 英数字・記号と、縦書き用の小書きの字(右上に寄っている)は、その字の大きさと位置に虫を合わせる
+            # 英数字・記号と、縦書き用の小書きの字（右上に寄っている）は、その字の大きさと位置に虫を合わせる
             squeeze = bug_squeeze(cell, nib, width)
             top, bottom = min(box_top, glyph.yMax - 30), glyph.yMin - 30
             lack = FIT_MIN_HEIGHT - (top - bottom)
             if lack > 0:
                 top, bottom = top + lack / 2, bottom - lack / 2
-            # 字送りの中央に無い字は、字の見た目の中央に虫を寄せる(字送りからはみ出さない範囲で)
+            # 字送りの中央に無い字は、字の見た目の中央に虫を寄せる（字送りからはみ出さない範囲で）
             reach = (cell - min(cell * BUG_FILL, max(width + 140, FIT_MIN_WIDTH))) / 2
             bug_dx = max(-reach, min(reach, (glyph.xMin + glyph.xMax) / 2 - advance / 2))
             boost = max(1.0, min(1.5, 0.8 * typical_size / size))
@@ -667,15 +667,15 @@ def build(file, family, ja, based_on, seed, nib, rough):
     def variant_names(name, count):
         return [name] + [f"{name}.v{n + 1}" for n in range(1, count)]
 
-    # 縦書きの右吹き出しは「標準の位置に目のある虫」の右・目の高さに描いてある。虫ごとの実際の目との差(横, 縦)。
-    # 目の位置は虫ごとに少し揺らしてあるので、描いたときの位置(eye_info)から求める
+    # 縦書きの右吹き出しは「標準の位置に目のある虫」の右・目の高さに描いてある。虫ごとの実際の目との差（横, 縦）。
+    # 目の位置は虫ごとに少し揺らしてあるので、描いたときの位置（eye_info）から求める
     eye_line = max(nib_size(scale_nib(nib, EYE_PEN_MAX)))
     eye_r = eye_radius(eye_line)
     nominal_right = 500 + 2 * eye_r + eye_line
     nominal_mid = nominal_eye_top(nib, box_top) - eye_r * 1.15 - eye_line / 2
     def side_shift(source, bug_dx):
         right, mid = eye_info[source]
-        return round(bug_dx + right - nominal_right), min(0, round(mid - nominal_mid))  # 上へはずらさない(縦の字送りが伸びるため)
+        return round(bug_dx + right - nominal_right), min(0, round(mid - nominal_mid))  # 上へはずらさない（縦の字送りが伸びるため）
     pre_sources = [(name, side_shift(name, 0)) for name in variant_names("mino.bug", VARIANTS)]  # 直後に右吹き出しが来うる虫
 
     pending_vertical, vertical_bugs, vertical_twins = [], [], []
@@ -698,11 +698,11 @@ def build(file, family, ja, based_on, seed, nib, rough):
         bubble[base] = base + ".bubble"
         liga[(base, mark, mark)] = base + ".struck"
         liga[(base, mark, circle)] = base + ".bubble"
-        # 元のフォントが縦用の字形を持つ字(かっこ、句読点など)からも、横書きと同じ字形を出す
+        # 元のフォントが縦用の字形を持つ字（かっこ、句読点など）からも、横書きと同じ字形を出す
         other = vert_map.get(base, base)
         liga[(other, mark, mark)] = base + ".struck"
         liga[(other, mark, circle)] = base + ".bubble"
-        if ch in SYMBOLS:  # ○ ● は発動用の記号でもあるので、縦用の写しは作らない(横書きと同じ字形を出す)
+        if ch in SYMBOLS:  # ○ ● は発動用の記号でもあるので、縦用の写しは作らない（横書きと同じ字形を出す）
             pre_sources += [(name, side_shift(name, bug_dx)) for name in variant_names(base + ".struck", count)]
             continue
         # ---- 縦書き ----
@@ -728,27 +728,27 @@ def build(file, family, ja, based_on, seed, nib, rough):
         liga[(vbase, mark, mark)] = vstruck
         liga[(vbase, mark, circle)] = base + ".bubble.vert"
         pending_vertical.append((base, ch, count, vdraw, vfit))
-    # 縦書き用の「虫 + 右吹き出し」。虫の仲間なので、ほかの虫の字形と続けて並べる(下の注を参照)
+    # 縦書き用の「虫 + 右吹き出し」。虫の仲間なので、ほかの虫の字形と続けて並べる（下の注を参照）
     for base, ch, count, char_name, (vcell, vsqueeze, vtop, vbottom, vboost, vdx) in pending_vertical:
         add_variants(base + ".mino.vert", lambda v: glyph_combined_vertical(glyph_set, char_name, f"{seed}-{ch}-vm{v}", nib, rough, vcell, vsqueeze, vtop, vbottom, mid, bubble_floor, vboost, typical_size, vdx), vcell, count)
         vertical_bugs += variant_names(base + ".mino.vert", count)
     # ---- 漢字 ----
-    # 漢字は数千字あるので、1字ずつ描くと字形数の上限(65,535)もファイルサイズも超える。
+    # 漢字は数千字あるので、1字ずつ描くと字形数の上限（65,535）もファイルサイズも超える。
     # 虫と吹き出しの枠を何種類か描いておき、漢字ごとの字形は「元の漢字 + 部品」を参照するだけにする。
-    # 吹き出しの中の漢字の大きさと位置は、1字ずつ合わせる(下の「漢字の吹き出し」)
+    # 吹き出しの中の漢字の大きさと位置は、1字ずつ合わせる（下の「漢字の吹き出し」）
     kanji = [code for code in sorted(cmap) if is_kanji(code) and chr(code) not in CHARS
              and getattr(glyf[cmap[code]], "numberOfContours", 0) != 0]
     kbugs, kframes, kvframes, frame_info = [], [], [], {}
     if kanji:
         for n in range(KANJI_BUGS):
             name = f"mino.kbug.{n + 1}"
-            # 漢字はかなより字面が大きいので、虫の幅を広げる(高さは変えない。目の高さが変わると吹き出しがずれる)
+            # 漢字はかなより字面が大きいので、虫の幅を広げる（高さは変えない。目の高さが変わると吹き出しがずれる）
             add(name, glyph_struck(glyph_set, None, f"{seed}-kbug{n}", nib, rough, 1000, 1000, bug_squeeze(KANJI_BUG_CELL, nib), box_top, box_bottom), 1000)
             eye_info[name] = draw_bug.last
             kbugs.append(name)
     # 吹き出しの字形は最後にまとめて並べる。順送りの規則は「虫以外」「吹き出し以外」の字形の一覧を
     # 何百回も参照するので、虫と吹き出しが字形の並びの中で混ざっていると一覧が細切れになり、
-    # HarfBuzz の検査の上限を超えて機能全体が無効になる(小さいフォントほど上限が低い)
+    # HarfBuzz の検査の上限を超えて機能全体が無効になる（小さいフォントほど上限が低い）
     for base, ch, boost, count in pending_bubbles:
         add_variants(base + ".bubble", lambda v: glyph_bubble(glyph_set, base, f"{seed}-{ch}-o{v}", nib, rough, bug_cell, box_top, mid, boost, bubble_floor, typical_size), 0, count, bubble_cycle)
     # 縦書き用の、虫の右に出す幅ゼロの吹き出し
@@ -767,7 +767,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
                 names.append(name)
     font["maxp"].numGlyphs = len(font.getGlyphOrder())
 
-    # 輪郭の統合: 重ねて描いた多角形をつなげて外周だけにする(点数が減り、重なりによる表示崩れも防ぐ)
+    # 輪郭の統合: 重ねて描いた多角形をつなげて外周だけにする（点数が減り、重なりによる表示崩れも防ぐ）
     raw_points = sum(len(glyf[n].coordinates) for n in added)
     removeOverlaps(font, glyphNames=added)
     for name in added:
@@ -776,23 +776,23 @@ def build(file, family, ja, based_on, seed, nib, rough):
 
     # 縦書きの字送り。虫は目が上に出るぶん 1000 より長くし、どの虫も目の高さが同じ位置に来るようにする。
     # 縦書きでは字形の「上端 + 上の余白」が字送りの始まりに来る。右吹き出しは直前の虫と同じ座標で描いてあるので、
-    # 虫の字送りの終わり(= 吹き出しの位置)がその座標のどこに当たるかから、上の余白を逆算する
+    # 虫の字送りの終わり（= 吹き出しの位置）がその座標のどこに当たるかから、上の余白を逆算する
     vmtx = font["vmtx"]
     origin = round(nominal_eye_top(nib, box_top) + 20)
     v_advance = origin - round(box_bottom - 100)
     def compose(name, parts, advance):
-        """ほかの字形を参照するだけの字形。parts は (字形名, x, y, 倍率) の並び。"""
+        """ほかの字形を参照するだけの字形。parts は （字形名, x, y, 倍率） の並び。"""
         pen = TTGlyphPen({part[0]: None for part in parts})
         for part, x, y, scale in parts:
             pen.addComponent(part, (scale, 0, 0, scale, round(x), round(y)))
         glyph = pen.glyph()
-        glyph.components[0].flags |= 0x0400  # 部品どうしが重なる(OVERLAP_COMPOUND)
+        glyph.components[0].flags |= 0x0400  # 部品どうしが重なる（OVERLAP_COMPOUND）
         glyf[name] = glyph
         glyph.recalcBounds(glyf)
         hmtx[name], vmtx[name] = (advance, glyph.xMin), (1000, 0)
 
-    # 漢字の虫(元の漢字 + 使い回しの虫)と、縦書きの入口になる写し
-    # ss02: 横書きは虫+吹き出しを1字形にまとめる(Illustrator は、1字を2字形に分ける置き換えを ss で当てない)。
+    # 漢字の虫（元の漢字 + 使い回しの虫）と、縦書きの入口になる写し
+    # ss02: 横書きは虫+吹き出しを1字形にまとめる（Illustrator は、1字を2字形に分ける置き換えを ss で当てない）。
     # 縦書きは字形数が足りないので「虫」と「吹き出し」の2字形に分ける
     multi = {}
     for code in kanji:
@@ -814,7 +814,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
         combined[base] = base + ".mino"
 
     # Safari は縦書きの字送りに、置き換えたあとの字形の「横の字送り」を使う。縦書きでしか出ない虫には、
-    # 縦の字送りと同じ横の字送りを持たせる(縦書きでは字形が横の字送りの中央に置かれるので、輪郭も中央へずらす)。
+    # 縦の字送りと同じ横の字送りを持たせる（縦書きでは字形が横の字送りの中央に置かれるので、輪郭も中央へずらす）。
     # 横書きと形が同じ虫は、そのための写しを作る
     for source, target, count in vertical_twins:
         names = variant_names(target, count)
@@ -826,10 +826,10 @@ def build(file, family, ja, based_on, seed, nib, rough):
                 bug_cycle[1][n - 1][names[0]] = new
         vertical_bugs += names
     # Illustrator は縦書きで、字送りの始点より大きく上に出た部分を切り落とす。右吹き出しは目の高さから上へ
-    # はみ出すので、吹き出しの付く字形だけ始点を rise だけ上に取り(字送りも rise だけ長くする)、
+    # はみ出すので、吹き出しの付く字形だけ始点を rise だけ上に取り（字送りも rise だけ長くする）、
     # はみ出しを VERTICAL_OVERHANG までに収める
     tall = [name for name in vertical_bugs if ".mino.vert" in name]
-    # 虫の大きさ・位置に合わせて吹き出しをずらす量(LOW_STEP 刻み)。上へずらすぶんも、はみ出しに数える
+    # 虫の大きさ・位置に合わせて吹き出しをずらす量（LOW_STEP 刻み）。上へずらすぶんも、はみ出しに数える
     snap = lambda value, step: round(value / step) * step
     side_of = {name + ".pre": (snap(dx, SIDE_STEP), snap(dy, SIDE_STEP_Y)) for name, (dx, dy) in pre_sources}
     if kanji:
@@ -851,7 +851,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
         vmtx[name] = (side_advance, origin + rise - glyf[name].yMax)
     # 右吹き出しは、直前の虫と同じ始点から描く。虫のあとに置いて上へ戻して描くと、Illustrator は
     # 字送りの始点より上にはみ出した字形を切り落とすので、吹き出しが消える。
-    # そこで、直後に右吹き出しが来る虫を「字送りゼロの写し(.pre)」に替え、字送りは吹き出しのほうに持たせる
+    # そこで、直後に右吹き出しが来る虫を「字送りゼロの写し（.pre）」に替え、字送りは吹き出しのほうに持たせる
     for name in vertical_bubbles:
         glyf[name].coordinates.translate((round(side_advance / 2), 0))
         glyf[name].recalcBounds(glyf)
@@ -869,7 +869,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
         hmtx[new] = (0, glyf[new].xMin)
         vmtx[new] = (0, vmtx[name][1] + rise)
         pre[name], pre_shift[new] = new, shift
-    # 縦書き: 虫の大きさ・位置に合わせてずらした右吹き出し。Illustrator は既定の設定では位置合わせ(GPOS)を
+    # 縦書き: 虫の大きさ・位置に合わせてずらした右吹き出し。Illustrator は既定の設定では位置合わせ（GPOS）を
     # 読まないので、横書きと同じく字形の置き換えで合わせる。ずらした吹き出しは、元の吹き出しを参照するだけの字形
     shifted = {shift: {} for shift in sorted(set(side_of.values()) - {(0, 0)})}
     for index, ((dx, dy), table) in enumerate(shifted.items()):
@@ -882,8 +882,8 @@ def build(file, family, ja, based_on, seed, nib, rough):
             hmtx[new] = (hmtx[name][0], glyf[new].xMin)
             vmtx[new] = (vmtx[name][0], vmtx[name][1] - dy)
             table[name] = new
-    # 漢字の吹き出し(枠の部品 + 縮小した漢字)。中の字の大きさと位置は、かなと同じ決め方で1字ずつ合わせる。
-    # 縮小した線は太らせない(太らせるには1字ずつ描く必要がある)
+    # 漢字の吹き出し（枠の部品 + 縮小した漢字）。中の字の大きさと位置は、かなと同じ決め方で1字ずつ合わせる。
+    # 縮小した線は太らせない（太らせるには1字ずつ描く必要がある）
     kanji_bubbles, kanji_side, kanji_whole = [], [], []
     for code in kanji:
         base = cmap[code]
@@ -905,7 +905,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
             else:
                 kanji_whole.append((code, base, frame, cx - scale * (shape.xMin + shape.xMax) / 2, cy - scale * anchor, scale))
             (kanji_side if vertical else kanji_bubbles).append(name)
-    # ss02 用の、虫と吹き出しを1つにまとめた字形(横書き)。吹き出しは、虫のすぐあとに置いたときと同じ位置。
+    # ss02 用の、虫と吹き出しを1つにまとめた字形（横書き）。吹き出しは、虫のすぐあとに置いたときと同じ位置。
     # 吹き出しの字形が字形順で続くよう、あとからまとめて作る
     for code, base, frame, x, y, scale in kanji_whole:
         advance, hit = hmtx[base][0], base + ".struck"
@@ -913,9 +913,9 @@ def build(file, family, ja, based_on, seed, nib, rough):
         compose(base + ".mino", [(base, 0, 0, 1), (kbugs[code % KANJI_BUGS], (advance - 1000) / 2, 0, 1), (frame, at, 0, 1), (base, at + x, y, scale)], advance)
         vmtx[base + ".mino"] = vmtx[hit]
         nudge[base + ".mino"] = nudge[hit]
-    # 横書き: 小さい虫(小書きの字、英数字など)のあとの吹き出しは、虫の高さに合わせて下げる。
-    # Illustrator は横書きで位置合わせ(GPOS)を読まないので、高さは字形の置き換えで合わせる。
-    # 下げた吹き出しは、元の吹き出しを参照するだけの字形(LOW_STEP 刻み)
+    # 横書き: 小さい虫（小書きの字、英数字など）のあとの吹き出しは、虫の高さに合わせて下げる。
+    # Illustrator は横書きで位置合わせ（GPOS）を読まないので、高さは字形の置き換えで合わせる。
+    # 下げた吹き出しは、元の吹き出しを参照するだけの字形（LOW_STEP 刻み）
     order = font.getReverseGlyphMap(rebuild=True)
     flat_bubbles = sorted(set().union(*bubble_cycle[0]) - set(vertical_bubbles), key=order.get)
     drop_of = {name: round(dy / LOW_STEP) * LOW_STEP for name, (dx, dy) in nudge.items()}
@@ -938,8 +938,8 @@ def build(file, family, ja, based_on, seed, nib, rough):
         gsub.LookupList.LookupCount = len(gsub.LookupList.Lookup)
         return gsub.LookupList.LookupCount - 1
 
-    # 縦書きの入口(かなを縦用の写しへ)。合字より先に効かせるので、最初に足す
-    if entry:  # かな全部に縦用の字形がある書体(Yusei Magic)では要らない
+    # 縦書きの入口（かなを縦用の写しへ）。合字より先に効かせるので、最初に足す
+    if entry:  # かな全部に縦用の字形がある書体（Yusei Magic）では要らない
         entry_lookup = add_lookup([otl.buildSingleSubstSubtable(entry)])
         for tag in ("vert", "vrt2"):
             add_feature(gsub, tag, entry_lookup)
@@ -958,7 +958,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
         record = ot.SubstLookupRecord()
         record.SequenceIndex, record.LookupListIndex = 0, swap
         forward.SubstLookupRecord, forward.SubstCount = [record], 1
-        # 後ろにあるかな・句読点からも伝える。右から左へたどる規則(逆順の文脈置換)は Illustrator が読めず、
+        # 後ろにあるかな・句読点からも伝える。右から左へたどる規則（逆順の文脈置換）は Illustrator が読めず、
         # 合字ごと無効になるので使わない。「SPREAD_REACH 字形先までに縦用の字形がある」規則を並べる
         between = otl.buildCoverage(set(spread) | set(upright.glyphs), order_now)
         backward = []
@@ -990,7 +990,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
         index = add_lookup(subtables)
         add_feature(gsub, tag, index)
         if tag == "liga":
-            # 縦書きでは liga が使われない(HarfBuzz の既定)。縦書きで必ず効く vert にも同じ合字を登録する。
+            # 縦書きでは liga が使われない（HarfBuzz の既定）。縦書きで必ず効く vert にも同じ合字を登録する。
             # Safari は逆に、縦書きでも liga のほうを当てる
             for vertical_tag in ("vert", "vrt2"):
                 add_feature(gsub, vertical_tag, index)
@@ -1001,7 +1001,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
 
     # 虫が続くとき形を切り替える。置き換えは左から順に進むので、
     # 「いちばん近い直前の虫が n 番目の形なら、自分は n+1 番目にする」だけで順送りになる。
-    # 直前の虫が最後の形なら何もしない(最初の形に戻る)。
+    # 直前の虫が最後の形なら何もしない（最初の形に戻る）。
     # 吹き出しも同じ仕組みで、直前の吹き出しと違う形にする。
     glyph_map = font.getReverseGlyphMap(rebuild=True)
 
@@ -1082,7 +1082,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
         for tag in ("liga", "vert", "vrt2"):
             add_feature(gsub, tag, low_lookup)
 
-    # 幅ゼロの吹き出しを、直前の字の中央と虫の高さに合わせる(GPOS)。
+    # 幅ゼロの吹き出しを、直前の字の中央と虫の高さに合わせる（GPOS）。
     # kern は切られることがあるので、常に効く dist に入れる
     if "GPOS" not in font:
         gpos = ot.GPOS()
@@ -1112,10 +1112,10 @@ def build(file, family, ja, based_on, seed, nib, rough):
         gpos.LookupList.Lookup.append(otl.buildLookup([otl.buildPairPosClassesSubtable(pairs, glyph_map)]))
         gpos.LookupList.LookupCount = len(gpos.LookupList.Lookup)
         add_feature(gpos, "dist", gpos.LookupList.LookupCount - 1)
-        # Illustrator は dist を使わないので kern にも登録する(同じルックアップは1回しか適用されない)
+        # Illustrator は dist を使わないので kern にも登録する（同じルックアップは1回しか適用されない）
         add_feature(gpos, "kern", gpos.LookupList.LookupCount - 1)
     def add_pairs(table, targets, tags):
-        """targets(吹き出し)が table の字形の直後に来たとき、その量だけずらす。"""
+        """targets（吹き出し）が table の字形の直後に来たとき、その量だけずらす。"""
         groups = {}
         for glyph_name, shift in table.items():
             if shift != (0, 0):
@@ -1129,12 +1129,12 @@ def build(file, family, ja, based_on, seed, nib, rough):
             for tag in tags:
                 add_feature(gpos, tag, gpos.LookupList.LookupCount - 1)
 
-    # 漢字の吹き出しには、下げた字形・ずらした字形を用意していない(字形数が足りない)。位置合わせだけで寄せる
+    # 漢字の吹き出しには、下げた字形・ずらした字形を用意していない（字形数が足りない）。位置合わせだけで寄せる
     add_pairs(nudge, kanji_bubbles, ("dist", "kern"))
     add_pairs(pre_shift, kanji_side, ("dist", "vkrn", "mark"))
-    # 縦書きの右吹き出しも、直前の虫の大きさと位置に合わせてずらす(小さい虫では左下へ寄せる)
+    # 縦書きの右吹き出しも、直前の虫の大きさと位置に合わせてずらす（小さい虫では左下へ寄せる）
     groups = {}
-    for glyph_name, (dx, dy) in pre_shift.items():  # 字形の置き換えで合わせた残り(刻みの端数)だけ
+    for glyph_name, (dx, dy) in pre_shift.items():  # 字形の置き換えで合わせた残り（刻みの端数）だけ
         shift = (dx - side_of[glyph_name][0], dy - side_of[glyph_name][1])
         if shift != (0, 0):
             groups.setdefault(shift, []).append(glyph_name)
@@ -1152,8 +1152,8 @@ def build(file, family, ja, based_on, seed, nib, rough):
     # OFL に従い、元フォントとは別の名前にする。日本語名も併せて登録する
     psname = family.replace(" ", "") + "-Regular"
     name = font["name"]
-    # 著作権表示(0)とデザイナー(9、12)は元のまま残す。改変したことは説明(10)に書く。
-    # 製造元(8)はこのファイルを作った側にし、元の製造元の URL(11)は外す
+    # 著作権表示（0）とデザイナー（9、12）は元のまま残す。改変したことは説明（10）に書く。
+    # 製造元（8）はこのファイルを作った側にし、元の製造元の URL（11）は外す
     name.names = [rec for rec in name.names if rec.langID == 0x409 and rec.nameID not in (8, 11)]
     for rec in name.names:
         if rec.nameID in (1, 16):
@@ -1180,7 +1180,7 @@ def build(file, family, ja, based_on, seed, nib, rough):
     points = [len(glyf[n].coordinates) for n in added]
     return (f"字形数 {len(font.getGlyphOrder())}、漢字 {len(kanji)} 字、縦のずらし {len(shifted)} 通り、" +
             f"{psname}.ttf: 虫の上下 {box_top}〜{box_bottom}、追加 {len(added)} 字形、点数 統合前 {raw_points} → 統合後 {sum(points)}"
-            f"(1字形あたり平均 {sum(points) // len(points)}、最大 {max(points)})")
+            f"（1字形あたり平均 {sum(points) // len(points)}、最大 {max(points)}）")
 
 
 def build_one(base):
