@@ -128,7 +128,7 @@ def social():
 def howto():
     """打ち方と出るもの。左が打つ字、右が出る形。"""
     c = Canvas(1600, 860)
-    rows = [(f"天{X}{X}", "字を虫にする"), (f"天{X}{X}点{X}{O}気", "正しい字を言わせる"), (f"{DOT}{X}{X}", "虫だけ")]
+    rows = [(f"点{X}{X}", "字を虫にする"), (f"点{X}{X}天{X}{O}気", "正しい字を言わせる"), (f"{DOT}{X}{X}", "虫だけ")]
     for i, (typed, note) in enumerate(rows):
         y = 250 + i * 250
         c.text("Marumoji", note, 80, y - 130, 30, color=SUB)
@@ -145,7 +145,7 @@ def styles():
         x, y = 80 + (i % 2) * 780, 250 + (i // 2) * 300
         kanji = i < 4
         c.text(key, ja, x, y + 75, 30, color=SUB)  # 吹き出しに重ならないよう、見本の下に置く
-        c.text(key, f"良い天{X}{X}点{X}{O}気です" if kanji else f"よいで{X}{X}て{X}{O}んきです", x, y, 92)
+        c.text(key, f"良い点{X}{X}天{X}{O}気です" if kanji else f"よいで{X}{X}て{X}{O}んきです", x, y, 92)
     c.save("styles")
 
 
@@ -153,7 +153,7 @@ def vertical():
     """縦書きの見本。"""
     c = Canvas(1600, 900)
     lines = [("Marumoji", f"今日は猫{X}{X}犬{X}{O}と遊んだ。"), ("Ballpen", f"明日は雨{X}{X}晴{X}{O}れるはず。"),
-             ("Marker", f"漢字の間{X}{X}違{X}{O}いを直す。"), ("Gokubuto", f"かきそこ{X}{X}ん{X}{O}じた。")]
+             ("Marker", f"漢字の問{X}{X}間{X}{O}違いを直す。"), ("Gokubuto", f"かきそこ{X}{X}ん{X}{O}じた。")]
     for i, (key, text) in enumerate(lines):
         c.text(key, text, 1340 - i * 340, 90, 76, vertical=True)
     c.center()
