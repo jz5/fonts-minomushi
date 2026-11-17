@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+
+# 6書体の完成ファイル（1つ 4〜12 MB）。リポジトリには入れず、Releases で配る
+/dist/
+
+# 手元の確認用（ブラウザや Illustrator の画面、テストページ）
+/*.jpg
+/*.png
+/vtest*.html
+/solo.html
+/make_sns_sample.py

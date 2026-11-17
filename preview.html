@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<title>Minomushi preview</title>
+<style>
+  @font-face { font-family: "Gokuboso"; src: url("dist/MinomushiGokuboso-Regular.ttf?v=232"); }
+  @font-face { font-family: "Marumoji"; src: url("dist/MinomushiMarumoji-Regular.ttf?v=232"); }
+  @font-face { font-family: "Ballpen"; src: url("dist/MinomushiBallpen-Regular.ttf?v=232"); }
+  @font-face { font-family: "Marker"; src: url("dist/MinomushiMarker-Regular.ttf?v=232"); }
+  @font-face { font-family: "Gokubuto"; src: url("dist/MinomushiGokubuto-Regular.ttf?v=232"); }
+  @font-face { font-family: "Yurugaki"; src: url("dist/MinomushiYurugaki-Regular.ttf?v=232"); }
+  @font-face { font-family: "NomiGokuboso"; src: url("dist-solo/MinomushiNomi-Gokuboso.ttf?v=1"); }
+  @font-face { font-family: "NomiBallpen"; src: url("dist-solo/MinomushiNomi-Ballpen.ttf?v=1"); }
+  @font-face { font-family: "NomiMarumoji"; src: url("dist-solo/MinomushiNomi-Marumoji.ttf?v=1"); }
+  @font-face { font-family: "NomiYurugaki"; src: url("dist-solo/MinomushiNomi-Yurugaki.ttf?v=1"); }
+  @font-face { font-family: "NomiMarker"; src: url("dist-solo/MinomushiNomi-Marker.ttf?v=1"); }
+  @font-face { font-family: "NomiGokubuto"; src: url("dist-solo/MinomushiNomi-Gokubuto.ttf?v=1"); }
+  body { background: #fffdf5; color: #222; margin: 24px 32px; }
+  h2 { font: 600 13px/1.4 system-ui; color: #888; margin: 22px 0 0; }
+  p { font-size: 44px; line-height: 2.9; margin: 0; }
+  .big { font-size: 120px; line-height: 2.7; }
+  .tight { line-height: 1.9; }
+  .table { font-size: 34px; line-height: 3; }
+  .s1 { font-feature-settings: "ss01"; } .s2 { font-feature-settings: "ss02"; } .s3 { font-feature-settings: "ss03"; }
+</style>
+<style>#compare p{font-size:40px;line-height:1.5}#compare p.s2{line-height:2.9}#compare h2{margin-top:30px}</style>
+<style>#guide p{font-size:38px;line-height:2.6}#guide .v{writing-mode:vertical-rl;height:9em;line-height:2.5;text-shadow:1em 0 0 transparent;display:inline-block;margin-right:40px;vertical-align:top}
+#guide .mino{word-break:keep-all}#guide code{font:12px/1.4 ui-monospace,monospace;color:#888;display:block}#nomi p{font-size:38px;line-height:1.7}</style>
+<div id="guide">
+<h2>使い分け（漢字のある4書体）: 横書きは ss、縦書きの漢字は合字</h2>
+<code>横 ss02: &lt;span class="s2"&gt;天&lt;/span&gt; / 横 ss01 + ss03: &lt;span class="s1"&gt;天&lt;/span&gt;&lt;span class="s3"&gt;点&lt;/span&gt; / 横 合字: &lt;span class="mino"&gt;天✕✕点✕○&lt;/span&gt;(.mino は word-break: keep-all)</code>
+<p style="font-family:Gokuboso">良い<span class="s2">天</span>気 良い<span class="s1">天</span><span class="s3">点</span>気 良い<span class="mino">天✕✕点✕○</span>気</p>
+<p style="font-family:Marumoji">良い<span class="s2">天</span>気 良い<span class="s1">天</span><span class="s3">点</span>気 良い<span class="mino">天✕✕点✕○</span>気</p>
+<p style="font-family:Ballpen">良い<span class="s2">天</span>気 良い<span class="s1">天</span><span class="s3">点</span>気 良い<span class="mino">天✕✕点✕○</span>気</p>
+<p style="font-family:Marker">良い<span class="s2">天</span>気 良い<span class="s1">天</span><span class="s3">点</span>気 良い<span class="mino">天✕✕点✕○</span>気</p>
+<code>縦 合字: &lt;span class="mino"&gt;猫✕✕犬✕○と&lt;/span&gt;（span にかなを1字入れる。段落に text-shadow: 1em 0 0 transparent）/ 縦 かなの ss02</code>
+<p class="v" style="font-family:Gokuboso">今日は<span class="mino">猫✕✕犬✕○と</span>遊ぶ<br>それ<span class="s2">は</span>ない</p><p class="v" style="font-family:Marumoji">今日は<span class="mino">猫✕✕犬✕○と</span>遊ぶ<br>それ<span class="s2">は</span>ない</p><p class="v" style="font-family:Ballpen">今日は<span class="mino">猫✕✕犬✕○と</span>遊ぶ<br>それ<span class="s2">は</span>ない</p><p class="v" style="font-family:Marker">今日は<span class="mino">猫✕✕犬✕○と</span>遊ぶ<br>それ<span class="s2">は</span>ない</p>
+</div>
+<div id="nomi">
+<h2>ミノムシ のみ（虫だけ。A〜Z / a〜z / 0〜9）: ごくぼそ / ボールペン / まるもじ / ゆるがき / マーカー / ごくぶと</h2>
+<p style="font-family:NomiGokuboso">ABCDEFGHIJKLM abcdefg 01234</p>
+<p style="font-family:NomiBallpen">ABCDEFGHIJKLM abcdefg 01234</p>
+<p style="font-family:NomiMarumoji">ABCDEFGHIJKLM abcdefg 01234</p>
+<p style="font-family:NomiYurugaki">ABCDEFGHIJKLM abcdefg 01234</p>
+<p style="font-family:NomiMarker">ABCDEFGHIJKLM abcdefg 01234</p>
+<p style="font-family:NomiGokubuto">ABCDEFGHIJKLM abcdefg 01234</p>
+<p style="font-family:'Hiragino Sans',sans-serif">今日は良い<span style="font-family:NomiMarumoji">A</span>気です。ちょ<span style="font-family:NomiMarumoji">a</span>と待<span style="font-family:NomiGokubuto">B</span>て</p>
+</div>
+<div id="compare">
+<h2>くらべる: 上から 文字だけ / 文字に虫を重ねる（ss01）/ 虫と吹き出しだけ（ss02）</h2>
+<h2>ミノムシ ごくぶと</h2>
+<p style="font-family:Gokubuto">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s1" style="font-family:Gokubuto">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s2" style="font-family:Gokubuto">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<h2>ミノムシ ゆるがき</h2>
+<p style="font-family:Yurugaki">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s1" style="font-family:Yurugaki">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s2" style="font-family:Yurugaki">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<h2>ミノムシ マーカー</h2>
+<p style="font-family:Marker">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s1" style="font-family:Marker">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s2" style="font-family:Marker">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<h2>ミノムシ ごくぼそ</h2>
+<p style="font-family:Gokuboso">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s1" style="font-family:Gokuboso">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s2" style="font-family:Gokuboso">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<h2>ミノムシ まるもじ</h2>
+<p style="font-family:Marumoji">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s1" style="font-family:Marumoji">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s2" style="font-family:Marumoji">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<h2>ミノムシ ボールペン</h2>
+<p style="font-family:Ballpen">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s1" style="font-family:Ballpen">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+<p class="s2" style="font-family:Ballpen">あいうえおかきくけこしくりっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽヴガパ</p>
+</div>
+<style>#dense p{font-size:30px;line-height:2.2}</style>
+<div id="dense">
+<h2>虫を並べる（ss01）: ごくぼそ / まるもじ / ボールペン / マーカー / ごくぶと / ゆるがき</h2>
+<p class="tight s1" style="font-family:Gokuboso">あいうえおかきくけこ</p>
+<p class="tight s1" style="font-family:Marumoji">あいうえおかきくけこ</p>
+<p class="tight s1" style="font-family:Ballpen">あいうえおかきくけこ</p>
+<p class="tight s1" style="font-family:Marker">あいうえおかきくけこ</p>
+<p class="tight s1" style="font-family:Gokubuto">あいうえおかきくけこ</p>
+<p class="tight s1" style="font-family:Yurugaki">あいうえおかきくけこ</p>
+<h2>小書きのかな: そのまま / 虫（字✕✕）/ 吹き出し（ss02）</h2>
+<p style="font-family:Gokuboso">きゃきゅきょっァィゥェォッャュョ きゃ✕✕きゅ✕✕きょ✕✕っ✕✕ャ✕✕ュ✕✕ョ✕✕ッ✕✕ <span class="s2">ゃゅょっぁぃぅぇぉャュョッ</span></p>
+<p style="font-family:Marumoji">きゃきゅきょっァィゥェォッャュョ きゃ✕✕きゅ✕✕きょ✕✕っ✕✕ャ✕✕ュ✕✕ョ✕✕ッ✕✕ <span class="s2">ゃゅょっぁぃぅぇぉャュョッ</span></p>
+<p style="font-family:Ballpen">きゃきゅきょっァィゥェォッャュョ きゃ✕✕きゅ✕✕きょ✕✕っ✕✕ャ✕✕ュ✕✕ョ✕✕ッ✕✕ <span class="s2">ゃゅょっぁぃぅぇぉャュョッ</span></p>
+<p style="font-family:Marker">きゃきゅきょっァィゥェォッャュョ きゃ✕✕きゅ✕✕きょ✕✕っ✕✕ャ✕✕ュ✕✕ョ✕✕ッ✕✕ <span class="s2">ゃゅょっぁぃぅぇぉャュョッ</span></p>
+<p style="font-family:Gokubuto">きゃきゅきょっァィゥェォッャュョ きゃ✕✕きゅ✕✕きょ✕✕っ✕✕ャ✕✕ュ✕✕ョ✕✕ッ✕✕ <span class="s2">ゃゅょっぁぃぅぇぉャュョッ</span></p>
+<p style="font-family:Yurugaki">きゃきゅきょっァィゥェォッャュョ きゃ✕✕きゅ✕✕きょ✕✕っ✕✕ャ✕✕ュ✕✕ョ✕✕ッ✕✕ <span class="s2">ゃゅょっぁぃぅぇぉャュョッ</span></p>
+</div>
+<div id="big">
+<h2>拡大（ごくぼそ）: て✕✕で✕○ / ●✕✕カ✕○ / ○✕✕</h2>
+<p class="big" style="font-family:Gokuboso">て✕✕で✕○●✕✕カ✕○○✕✕</p>
+<p class="tight" style="font-family:Gokuboso">そのまま: たて×よこ たなか○○さん ●あ ✕ い✕</p>
+</div>
+<div id="list">
+<h2>例文（字✕✕ で虫を重ね、字✕○ で吹き出し）</h2>
+<h2>ミノムシ ごくぼそ（元: Yomogi）</h2>
+<p style="font-family:Gokuboso">おけ✕✕げ✕○んきて✕✕で✕○すか ツ✕✕シ✕○ールをはる きれいな字✕✕字✕○がかきたいぬ✕✕ね✕○</p>
+<h2>ミノムシ まるもじ（元: Hachi Maru Pop）</h2>
+<p style="font-family:Marumoji">おけ✕✕げ✕○んきて✕✕で✕○すか ツ✕✕シ✕○ールをはる きれいな字✕✕字✕○がかきたいぬ✕✕ね✕○</p>
+<h2>ミノムシ ボールペン（元: Zen Kurenaido）</h2>
+<p style="font-family:Ballpen">おけ✕✕げ✕○んきて✕✕で✕○すか ツ✕✕シ✕○ールをはる きれいな字✕✕字✕○がかきたいぬ✕✕ね✕○</p>
+<h2>ミノムシ マーカー（元: Yusei Magic）</h2>
+<p style="font-family:Marker">おけ✕✕げ✕○んきて✕✕で✕○すか ツ✕✕シ✕○ールをはる きれいな字✕✕字✕○がかきたいぬ✕✕ね✕○</p>
+<h2>ミノムシ ごくぶと（元: Darumadrop One、かなのみ）</h2>
+<p style="font-family:Gokubuto">おけ✕✕げ✕○んきて✕✕で✕○すか ツ✕✕シ✕○ールをはる きれいな●✕✕じ✕○がかきたいぬ✕✕ね✕○</p>
+<h2>ミノムシ ゆるがき（元: Slackside One、かなのみ）</h2>
+<p style="font-family:Yurugaki">おけ✕✕げ✕○んきて✕✕で✕○すか ツ✕✕シ✕○ールをはる きれいな●✕✕じ✕○がかきたいぬ✕✕ね✕○</p>
+</div>
+<style>#vertical .v{writing-mode:vertical-rl;font-size:40px;line-height:2.6;height:19em;margin:0 0 30px;padding-right:1.2em;max-width:100%;box-sizing:border-box;overflow-x:auto}</style>
+<div id="vertical">
+<h2>縦書き: 右の行から 文字だけ / 字✕✕ と 字✕○（吹き出しは右、2行）/ 記号・全角英数字・漢字「字」/ ss01 / ss02</h2>
+<h2>ミノムシ ごくぼそ</h2>
+<p class="v" style="font-family:Gokuboso">きょうはいいてんきでした。<br>きょうはて✕✕で✕○んきでし✕✕す✕○た。きっ✕✕ゃ✕○と<br>ラー✕✕ッ✕○メン<br>「✕✕（✕○です。✕✕！✕○ Ａ✕✕１✕○<br>漢✕✕感✕○字と猫✕✕犬✕○<br><span class="s1">きょうはてんきー</span><br><span class="s2">きょうはてんきー</span></p>
+<h2>ミノムシ まるもじ</h2>
+<p class="v" style="font-family:Marumoji">きょうはいいてんきでした。<br>きょうはて✕✕で✕○んきでし✕✕す✕○た。きっ✕✕ゃ✕○と<br>ラー✕✕ッ✕○メン<br>「✕✕（✕○です。✕✕！✕○ Ａ✕✕１✕○<br>漢✕✕感✕○字と猫✕✕犬✕○<br><span class="s1">きょうはてんきー</span><br><span class="s2">きょうはてんきー</span></p>
+<h2>ミノムシ ボールペン</h2>
+<p class="v" style="font-family:Ballpen">きょうはいいてんきでした。<br>きょうはて✕✕で✕○んきでし✕✕す✕○た。きっ✕✕ゃ✕○と<br>ラー✕✕ッ✕○メン<br>「✕✕（✕○です。✕✕！✕○ Ａ✕✕１✕○<br>漢✕✕感✕○字と猫✕✕犬✕○<br><span class="s1">きょうはてんきー</span><br><span class="s2">きょうはてんきー</span></p>
+<h2>ミノムシ マーカー</h2>
+<p class="v" style="font-family:Marker">きょうはいいてんきでした。<br>きょうはて✕✕で✕○んきでし✕✕す✕○た。きっ✕✕ゃ✕○と<br>ラー✕✕ッ✕○メン<br>「✕✕（✕○です。✕✕！✕○ Ａ✕✕１✕○<br>漢✕✕感✕○字と猫✕✕犬✕○<br><span class="s1">きょうはてんきー</span><br><span class="s2">きょうはてんきー</span></p>
+<h2>ミノムシ ごくぶと</h2>
+<p class="v" style="font-family:Gokubuto">きょうはいいてんきでした。<br>きょうはて✕✕で✕○んきでし✕✕す✕○た。きっ✕✕ゃ✕○と<br>ラー✕✕ッ✕○メン<br>「✕✕（✕○です。✕✕！✕○ Ａ✕✕１✕○<br>漢✕✕感✕○字と猫✕✕犬✕○<br><span class="s1">きょうはてんきー</span><br><span class="s2">きょうはてんきー</span></p>
+<h2>ミノムシ ゆるがき</h2>
+<p class="v" style="font-family:Yurugaki">きょうはいいてんきでした。<br>きょうはて✕✕で✕○んきでし✕✕す✕○た。きっ✕✕ゃ✕○と<br>ラー✕✕ッ✕○メン<br>「✕✕（✕○です。✕✕！✕○ Ａ✕✕１✕○<br>漢✕✕感✕○字と猫✕✕犬✕○<br><span class="s1">きょうはてんきー</span><br><span class="s2">きょうはてんきー</span></p>
+</div>
+<div id="alnum">
+<h2>英数字・記号: そのまま / 字✕✕ と 字✕○ / ss01 / ss02</h2>
+<p style="font-family:Gokuboso;line-height:1.6">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Gokuboso">2✕✕3✕○0✕✕5✕○年 a✕✕e✕○pple だ。✕✕、✕○ ？✕✕！✕○</p>
+<p class="s1" style="font-family:Gokuboso;line-height:1.9">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p class="s2" style="font-family:Gokuboso">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Marumoji;line-height:1.6">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Marumoji">2✕✕3✕○0✕✕5✕○年 a✕✕e✕○pple だ。✕✕、✕○ ？✕✕！✕○</p>
+<p class="s1" style="font-family:Marumoji;line-height:1.9">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p class="s2" style="font-family:Marumoji">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Ballpen;line-height:1.6">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Ballpen">2✕✕3✕○0✕✕5✕○年 a✕✕e✕○pple だ。✕✕、✕○ ？✕✕！✕○</p>
+<p class="s1" style="font-family:Ballpen;line-height:1.9">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p class="s2" style="font-family:Ballpen">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Marker;line-height:1.6">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Marker">2✕✕3✕○0✕✕5✕○年 a✕✕e✕○pple だ。✕✕、✕○ ？✕✕！✕○</p>
+<p class="s1" style="font-family:Marker;line-height:1.9">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p class="s2" style="font-family:Marker">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Gokubuto;line-height:1.6">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Gokubuto">2✕✕3✕○0✕✕5✕○年 a✕✕e✕○pple だ。✕✕、✕○ ？✕✕！✕○</p>
+<p class="s1" style="font-family:Gokubuto;line-height:1.9">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p class="s2" style="font-family:Gokubuto">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Yurugaki;line-height:1.6">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p style="font-family:Yurugaki">2✕✕3✕○0✕✕5✕○年 a✕✕e✕○pple だ。✕✕、✕○ ？✕✕！✕○</p>
+<p class="s1" style="font-family:Yurugaki;line-height:1.9">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+<p class="s2" style="font-family:Yurugaki">ABCxyz gjpq 0123 ＡＢａｂ１２ 、。！？・「」（）.,!?()</p>
+</div>
+<div id="align">
+<h2>吹き出しは直前の字の中央・虫の高さに合う: 狭い字 / 広い字 / 小書きの字</h2>
+<p style="font-family:Gokuboso">し✕✕く✕○り✕✕い✕○ は✕✕ほ✕○ぬ✕✕ね✕○ っ✕✕つ✕○ゃ✕✕や✕○</p>
+<p style="font-family:Marumoji">し✕✕く✕○り✕✕い✕○ は✕✕ほ✕○ぬ✕✕ね✕○ っ✕✕つ✕○ゃ✕✕や✕○</p>
+<p style="font-family:Ballpen">し✕✕く✕○り✕✕い✕○ は✕✕ほ✕○ぬ✕✕ね✕○ っ✕✕つ✕○ゃ✕✕や✕○</p>
+<p style="font-family:Marker">し✕✕く✕○り✕✕い✕○ は✕✕ほ✕○ぬ✕✕ね✕○ っ✕✕つ✕○ゃ✕✕や✕○</p>
+<p style="font-family:Gokubuto">し✕✕く✕○り✕✕い✕○ は✕✕ほ✕○ぬ✕✕ね✕○ っ✕✕つ✕○ゃ✕✕や✕○</p>
+<p style="font-family:Yurugaki">し✕✕く✕○り✕✕い✕○ は✕✕ほ✕○ぬ✕✕ね✕○ っ✕✕つ✕○ゃ✕✕や✕○</p>
+</div>
+<div id="bcycle">
+<h2>同じ字の吹き出しを続けても形が変わる: あ✕✕の✕○ ×6</h2>
+<p style="font-family:Gokuboso">あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○</p>
+<p style="font-family:Marumoji">あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○</p>
+<p style="font-family:Ballpen">あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○</p>
+<p style="font-family:Marker">あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○</p>
+<p style="font-family:Gokubuto">あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○</p>
+<p style="font-family:Yurugaki">あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○あ✕✕の✕○</p>
+</div>
+<div id="cycle">
+<h2>同じ字を続けても虫の形が変わる: の✕✕ ×6 / ●✕✕ ×4 / ss01 で「ああああ」</h2>
+<p class="tight" style="font-family:Gokuboso">の✕✕の✕✕の✕✕の✕✕の✕✕の✕✕ ●✕✕●✕✕●✕✕●✕✕ <span class="s1">ああああ</span></p>
+<p class="tight" style="font-family:Marumoji">の✕✕の✕✕の✕✕の✕✕の✕✕の✕✕ ●✕✕●✕✕●✕✕●✕✕ <span class="s1">ああああ</span></p>
+<p class="tight" style="font-family:Ballpen">の✕✕の✕✕の✕✕の✕✕の✕✕の✕✕ ●✕✕●✕✕●✕✕●✕✕ <span class="s1">ああああ</span></p>
+<p class="tight" style="font-family:Marker">の✕✕の✕✕の✕✕の✕✕の✕✕の✕✕ ●✕✕●✕✕●✕✕●✕✕ <span class="s1">ああああ</span></p>
+<p class="tight" style="font-family:Gokubuto">の✕✕の✕✕の✕✕の✕✕の✕✕の✕✕ ●✕✕●✕✕●✕✕●✕✕ <span class="s1">ああああ</span></p>
+<p class="tight" style="font-family:Yurugaki">の✕✕の✕✕の✕✕の✕✕の✕✕の✕✕ ●✕✕●✕✕●✕✕●✕✕ <span class="s1">ああああ</span></p>
+</div>
+<div id="table">
+<h2>ss02（虫+その字の吹き出し）で五十音: ごくぼそ / マーカー / ごくぶと</h2>
+<p class="table s2" style="font-family:Gokuboso">あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん<br>アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン</p>
+<p class="table s2" style="font-family:Marker">あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん<br>アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン</p>
+<p class="table s2" style="font-family:Gokubuto">あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん<br>アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン</p>
+</div>
+</html>
